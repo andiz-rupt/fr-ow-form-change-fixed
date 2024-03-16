@@ -9,29 +9,43 @@ import textwrap
 import sys
 
 OFFSET_TO_PUT = 0xf00000
-
-PathVar = os.environ.get('Path')
-Paths = PathVar.split(';')
-PATH = ""
-for candidatePath in Paths:
-	if "devkitARM" in candidatePath:
-		PATH = candidatePath
-		break
-if PATH == "":
-	PATH = 'C://devkitPro//devkitARM//bin'
-	if os.path.isdir(PATH) == False:
-		print('Devkit not found.')
-		sys.exit(1)
-		
 ROM_NAME = "test.gba"
 
-PREFIX = 'arm-none-eabi-'
-OBJCOPY = os.path.join(PATH, PREFIX + 'objcopy')
-OBJDUMP = os.path.join(PATH, PREFIX + 'objdump')
-NM = os.path.join(PATH, PREFIX + 'nm')
-AS = os.path.join(PATH, PREFIX + 'as')
-CC = os.path.join(PATH, PREFIX + 'gcc')
-CXX = os.path.join(PATH, PREFIX + 'g++')
+if sys.platform.startswith('win'):
+    PathVar = os.environ.get('Path')
+    Paths = PathVar.split(';')
+    PATH = ''
+    for candidatePath in Paths:
+        if 'devkitARM' in candidatePath:
+            PATH = candidatePath
+            break
+    if PATH == '':
+        print('DevKit does not exist in your Path variable.\nChecking default location.')
+        PATH = 'C://devkitPro//devkitARM//bin'
+        if os.path.isdir(PATH) is False:
+            print('...\nDevkit not found.')
+            sys.exit(1)
+        else:
+            print('Devkit found.')
+
+    PREFIX = '/arm-none-eabi-'
+    AS = PATH + PREFIX + 'as'
+    CC = PATH + PREFIX + 'gcc'
+    CXX = PATH + PREFIX + 'g++'
+    NM = PREFIX + 'nm'
+    LD = PATH + PREFIX + 'ld'
+    OBJCOPY = PATH + PREFIX + 'objcopy'
+    OBJDUMP = PATH + PREFIX + 'objdump'
+
+else:  # Linux, OSX, etc.
+    PREFIX = 'arm-none-eabi-'
+    AS = PREFIX + 'as'
+    CC = PREFIX + 'gcc'
+    CXX = PREFIX + 'g++'
+    NM = PREFIX + 'nm'
+    LD = PREFIX + 'ld'
+    OBJCOPY = PREFIX + 'objcopy'
+    OBJDUMP = PREFIX + 'objdump'
 
 def get_text_section():
 		# Dump sections
@@ -160,7 +174,7 @@ with open(ROM_NAME, 'rb+') as rom:
 		with open('repoints', 'r') as repointlist:
 				for line in repointlist:
 						if line.strip().startswith('#'): continue
-						if len(line.split()) is 2:
+						if len(line.split()) == 2:
 								symbol, address = line.split()
 								offset = int(address, 16) - 0x08000000
 								try:
@@ -170,7 +184,7 @@ with open(ROM_NAME, 'rb+') as rom:
 										continue
 
 								repoint(rom, code, offset)
-						if len(line.split()) is 3:
+						if len(line.split()) == 3:
 								symbol, address, slide = line.split()
 								offset = int(address, 16) - 0x08000000
 								try:

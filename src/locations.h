@@ -2,14 +2,14 @@
 #define LOCATIONS_H_INCLUDED
 #include "types.h"
 
-u16 var_8003;
-u16 var_8004;
-u16 var_8005;
-u16 var_8006;
-u16 var_800D_lastresult;
-u16 var_800E;
-u8 count_pokemon;
+extern u16 var_8003;
+extern u16 var_8004;
+extern u16 var_8005;
+extern u16 var_8006;
+extern u16 var_800D_lastresult;
+extern u16 var_800E;
+extern u8 count_pokemon;
 
-void *routine_to_run_after_graphics;
+extern void *routine_to_run_after_graphics;
 
 #endif // LOCATIONS_H_INCLUDED

@@ -63,10 +63,19 @@ def edit_insert(offset):
 	file_change_line("./scripts/insert.py", 11, "OFFSET_TO_PUT = " + hex(offset) + '\n')
 		
 def build_code():
-	os.system("python scripts/build.py")
+	if shutil.which('python3') is not None:
+		result = os.system("python3 scripts/build.py")
+	else:
+		result = os.system("python scripts/build.py")
+
+	if result != 0:  # Build wasn't sucessful
+		sys.exit(1)
 	
 def insert_code():
-	os.system("python scripts/insert.py")
+	if shutil.which('python3') is not None:
+		os.system("python3 scripts/insert.py")
+	else:
+		os.system("python scripts/insert.py")
 	
 def clear_from_to(rom, from_, to_):
 	rom.seek(from_)

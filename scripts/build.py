@@ -8,27 +8,36 @@ import hashlib
 import subprocess
 import sys
 
-PathVar = os.environ.get('Path')
-Paths = PathVar.split(';')
-PATH = ""
-for candidatePath in Paths:
-    if "devkitARM" in candidatePath:
-        PATH = candidatePath
-        break
-if PATH == "":
-	print('DevKit does not exist in your Path variable.\nChecking default location.')
-	PATH = 'C://devkitPro//devkitARM//bin'
-	if os.path.isdir(PATH) == False:
-		print("...\nDevkit not found.")
-		sys.exit(1)
-	else:
-		print("Devkit found.")
-		
-PREFIX = '/arm-none-eabi-'
-AS = (PATH + PREFIX + 'as')
-CC = (PATH + PREFIX + 'gcc')
-LD = (PATH + PREFIX + 'ld')
-OBJCOPY = (PATH + PREFIX + 'objcopy')
+if sys.platform.startswith('win'):
+    PathVar = os.environ.get('Path')
+    Paths = PathVar.split(';')
+    PATH = ''
+    for candidatePath in Paths:
+        if 'devkitARM' in candidatePath:
+            PATH = candidatePath
+            break
+    if PATH == '':
+        print('DevKit does not exist in your Path variable.\nChecking default location.')
+        PATH = 'C://devkitPro//devkitARM//bin'
+        if os.path.isdir(PATH) is False:
+            print('...\nDevkit not found.')
+            sys.exit(1)
+        else:
+            print('Devkit found.')
+
+    PREFIX = '/arm-none-eabi-'
+    AS = PATH + PREFIX + 'as'
+    CC = PATH + PREFIX + 'gcc'
+    LD = PATH + PREFIX + 'ld'
+    OBJCOPY = PATH + PREFIX + 'objcopy'
+
+else:  # Linux, OSX, etc.
+    PREFIX = 'arm-none-eabi-'
+    AS = PREFIX + 'as'
+    CC = PREFIX + 'gcc'
+    LD = PREFIX + 'ld'
+    OBJCOPY = PREFIX + 'objcopy'
+
 SRC = './src'
 BUILD = './build'
 ASFLAGS = ['-mthumb', '-I', SRC]
